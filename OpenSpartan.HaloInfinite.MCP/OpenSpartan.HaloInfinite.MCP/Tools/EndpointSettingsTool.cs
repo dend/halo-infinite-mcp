@@ -18,11 +18,6 @@ namespace OpenSpartan.HaloInfinite.MCP.Tools
 
         public async Task<CallToolResponse> ExecuteAsync(Dictionary<string, object> arguments, IMcpServer server, CancellationToken cancellationToken)
         {
-            //if (!arguments.TryGetValue("message", out var message))
-            //{
-            //    throw new McpServerException("Missing required argument 'message'");
-            //}
-
             var endpointSettings = await HaloInfiniteAPIBridge.SafeAPICall(async () => await HaloInfiniteAPIBridge.HaloClient.GetApiSettingsContainer());
 
             if (endpointSettings != null)

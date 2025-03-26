@@ -1,22 +1,25 @@
-﻿using Den.Dev.Grunt.Models;
-using Den.Dev.Grunt.Models.HaloInfinite;
+﻿using Den.Dev.Grunt.Models.HaloInfinite;
 using ModelContextProtocol.Protocol.Types;
 using ModelContextProtocol.Server;
 using OpenSpartan.HaloInfinite.MCP.Core;
+using OpenSpartan.HaloInfinite.MCP.Helpers;
 using OpenSpartan.HaloInfinite.MCP.Models;
 using Serilog;
+using SkiaSharp;
 using System.Text.Json;
 
 namespace OpenSpartan.HaloInfinite.MCP.Tools
 {
     public class ExchangeListTool : ITool
     {
+        private const int ThumbnailSize = 128;
+
         public string Name => "opsp_exchange_list";
         public string Description => "Lists all of the items that are currently available on the Halo Infinite exchange.";
 
         public JsonElement InputSchema => JsonSerializer.Deserialize<JsonElement>("""
         {
-            "type": "object"
+            "type": "object",
         }
         """);
 
@@ -44,7 +47,6 @@ namespace OpenSpartan.HaloInfinite.MCP.Tools
 
                 foreach (var item in exchangeItems)
                 {
-                    // Add JSON representation of the item
                     contentItems.Add(new Content()
                     {
                         Text = JsonSerializer.Serialize(item),
@@ -56,59 +58,27 @@ namespace OpenSpartan.HaloInfinite.MCP.Tools
 
                     Log.Logger.Information($"Testing image path: {imagePath}...");
 
-                    // Add image if the path exists
                     if (!string.IsNullOrEmpty(imagePath) && System.IO.File.Exists(imagePath))
                     {
                         Log.Logger.Information($"{imagePath} exists.");
 
                         try
                         {
-                            // Load the image
-                            byte[] imageBytes = await System.IO.File.ReadAllBytesAsync(imagePath, cancellationToken);
+                            string base64Image = await ImageHelpers.ResizeImageToBase64(
+                                imagePath,
+                                ThumbnailSize,
+                                ThumbnailSize,
+                                100,
+                                SKEncodedImageFormat.Png);
 
-                            // Use SkiaSharp to resize (cross-platform)
-                            using (var inputStream = new MemoryStream(imageBytes))
-                            using (var outputStream = new MemoryStream())
+                            if (!string.IsNullOrEmpty(base64Image))
                             {
-                                // Load the original bitmap
-                                using (var original = SkiaSharp.SKBitmap.Decode(inputStream))
-                                {
-                                    var imageInfo = new SkiaSharp.SKImageInfo(128, 128);
-
-                                    // Use the newer sampling options API instead of the obsolete SKFilterQuality
-                                    var samplingOptions = new SkiaSharp.SKSamplingOptions(
-                                        SkiaSharp.SKCubicResampler.Mitchell); // High quality resampling
-
-                                    using (var resized = original.Resize(imageInfo, samplingOptions))
-                                    using (var image = SkiaSharp.SKImage.FromBitmap(resized))
-                                    using (var data = image.Encode(SkiaSharp.SKEncodedImageFormat.Png, 100))
-                                    {
-                                        // Save to memory stream
-                                        data.SaveTo(outputStream);
-                                    }
-                                }
-
-                                // Convert to base64
-                                outputStream.Position = 0;
-                                string base64Image = Convert.ToBase64String(outputStream.ToArray());
-
                                 contentItems.Add(new Content()
                                 {
-                                    Type = "resource",
-                                    Resource = new ResourceContents()
-                                    {
-                                        Blob = base64Image,
-                                        MimeType = "image/png",
-                                        Uri = $"opsp://resources/localimage/{item.ImagePath}",
-                                    }
+                                    Type = "image",
+                                    MimeType = "image/png",
+                                    Data = base64Image
                                 });
-
-                                //contentItems.Add(new Content()
-                                //{
-                                //    Type = "image",
-                                //    MimeType = "image/png",
-                                //    Data = base64Image
-                                //});
                             }
                         }
                         catch (Exception ex)
@@ -205,7 +175,7 @@ namespace OpenSpartan.HaloInfinite.MCP.Tools
 
                             FileSystemHelpers.EnsureDirectoryExists(qualifiedItemImagePath);
 
-                            await DownloadAndSetImage(metadataContainer.ImagePath, qualifiedItemImagePath);
+                            await HaloInfiniteAPIBridge.DownloadHaloAPIImage(metadataContainer.ImagePath, qualifiedItemImagePath);
 
                             exchangeItems.Add(metadataContainer);
 
@@ -220,40 +190,6 @@ namespace OpenSpartan.HaloInfinite.MCP.Tools
             }
 
             return exchangeItems;
-        }
-
-        private static async Task DownloadAndSetImage(string serviceImagePath, string localImagePath, bool isOnWaypoint = false)
-        {
-            try
-            {
-                // Check if local image file exists
-                if (System.IO.File.Exists(localImagePath))
-                {
-                    return;
-                }
-
-                HaloApiResultContainer<byte[], RawResponseContainer>? image = null;
-
-                Func<Task<HaloApiResultContainer<byte[], RawResponseContainer>>> apiCall = isOnWaypoint ?
-                    async () => await HaloInfiniteAPIBridge.HaloClient.GameCmsGetGenericWaypointFile(serviceImagePath) :
-                    async () => await HaloInfiniteAPIBridge.HaloClient.GameCmsGetImage(serviceImagePath);
-
-                image = await HaloInfiniteAPIBridge.SafeAPICall(apiCall);
-
-                // Check if the image retrieval was successful
-                if (image != null && image.Result != null && image.Response.Code == 200)
-                {
-                    // In case the folder does not exist, make sure we create it.
-                    FileInfo file = new(localImagePath);
-                    file.Directory.Create();
-
-                    await System.IO.File.WriteAllBytesAsync(localImagePath, image.Result);
-                }
-            }
-            catch (Exception ex)
-            {
-                Log.Logger.Error($"Failed to download and set image '{serviceImagePath}' to '{localImagePath}'. Error: {ex.Message}");
-            }
         }
     }
 }

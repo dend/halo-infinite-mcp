@@ -119,5 +119,39 @@ namespace OpenSpartan.HaloInfinite.MCP.Core
                 return false;
             }
         }
+
+        internal static async Task DownloadHaloAPIImage(string serviceImagePath, string localImagePath, bool isOnWaypoint = false)
+        {
+            try
+            {
+                // Check if local image file exists
+                if (System.IO.File.Exists(localImagePath))
+                {
+                    return;
+                }
+
+                HaloApiResultContainer<byte[], RawResponseContainer>? image = null;
+
+                Func<Task<HaloApiResultContainer<byte[], RawResponseContainer>>> apiCall = isOnWaypoint ?
+                    async () => await HaloInfiniteAPIBridge.HaloClient.GameCmsGetGenericWaypointFile(serviceImagePath) :
+                    async () => await HaloInfiniteAPIBridge.HaloClient.GameCmsGetImage(serviceImagePath);
+
+                image = await HaloInfiniteAPIBridge.SafeAPICall(apiCall);
+
+                // Check if the image retrieval was successful
+                if (image != null && image.Result != null && image.Response.Code == 200)
+                {
+                    // In case the folder does not exist, make sure we create it.
+                    FileInfo file = new(localImagePath);
+                    file.Directory.Create();
+
+                    await System.IO.File.WriteAllBytesAsync(localImagePath, image.Result);
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Logger.Error($"Failed to download and set image '{serviceImagePath}' to '{localImagePath}'. Error: {ex.Message}");
+            }
+        }
     }
 }

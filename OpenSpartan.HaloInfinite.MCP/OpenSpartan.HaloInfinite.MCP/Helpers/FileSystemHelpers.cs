@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OpenSpartan.HaloInfinite.MCP.Core
+namespace OpenSpartan.HaloInfinite.MCP.Helpers
 {
     internal static class FileSystemHelpers
     {

@@ -80,8 +80,6 @@ namespace OpenSpartan.HaloInfinite.MCP
             // Create resource providers
             var resourceProviders = new IResourceProvider[]
             {
-                //new EndpointSettingsResource(),
-                //new MyServiceRecordResource()
                 new GetLocalImageResource(),
             };
 
@@ -186,6 +184,7 @@ namespace OpenSpartan.HaloInfinite.MCP
                 new MyServiceRecordTool(),
                 new MyLatestMatchesTool(),
                 new ExchangeListTool(),
+                new MyGearConfiguration(),
             };
 
             return new ToolsCapability
