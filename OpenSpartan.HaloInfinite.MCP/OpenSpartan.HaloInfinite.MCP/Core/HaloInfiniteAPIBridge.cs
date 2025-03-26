@@ -6,7 +6,7 @@ using Den.Dev.Grunt.Models.Security;
 using Microsoft.Identity.Client;
 using Serilog;
 
-namespace OpenSpartan.HaloInfinite.MCP.Core
+namespace OpenSpartan.Forerunner.MCP.Core
 {
     internal static class HaloInfiniteAPIBridge
     {

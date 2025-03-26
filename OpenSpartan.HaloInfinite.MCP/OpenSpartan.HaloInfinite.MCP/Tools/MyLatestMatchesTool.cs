@@ -1,10 +1,10 @@
 ﻿using ModelContextProtocol.Protocol.Types;
 using ModelContextProtocol.Server;
-using OpenSpartan.HaloInfinite.MCP.Core;
+using OpenSpartan.Forerunner.MCP.Core;
 using Serilog;
 using System.Text.Json;
 
-namespace OpenSpartan.HaloInfinite.MCP.Tools
+namespace OpenSpartan.Forerunner.MCP.Tools
 {
     public class MyLatestMatchesTool : ITool
     {

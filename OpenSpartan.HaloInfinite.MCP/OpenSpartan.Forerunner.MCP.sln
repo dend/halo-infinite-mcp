@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.13.35828.75 d17.13
+VisualStudioVersion = 17.13.35828.75
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenSpartan.HaloInfinite.MCP", "OpenSpartan.HaloInfinite.MCP\OpenSpartan.HaloInfinite.MCP.csproj", "{EA2209D5-FFD5-4E75-B2D8-CBFD052AF6B1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenSpartan.Forerunner.MCP", "OpenSpartan.HaloInfinite.MCP\OpenSpartan.Forerunner.MCP.csproj", "{EA2209D5-FFD5-4E75-B2D8-CBFD052AF6B1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

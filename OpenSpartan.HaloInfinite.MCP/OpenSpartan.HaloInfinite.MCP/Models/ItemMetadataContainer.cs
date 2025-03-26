@@ -1,6 +1,6 @@
 ﻿using Den.Dev.Grunt.Models.HaloInfinite;
 
-namespace OpenSpartan.HaloInfinite.MCP.Models
+namespace OpenSpartan.Forerunner.MCP.Models
 {
     internal sealed class ItemMetadataContainer
     {

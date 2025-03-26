@@ -1,4 +1,4 @@
-﻿namespace OpenSpartan.HaloInfinite.MCP.Models
+﻿namespace OpenSpartan.Forerunner.MCP.Models
 {
     public enum ItemClass
     {

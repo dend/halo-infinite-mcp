@@ -1,7 +1,7 @@
 ﻿using Microsoft.Identity.Client;
 using Microsoft.Identity.Client.Extensions.Msal;
 
-namespace OpenSpartan.HaloInfinite.MCP.Core
+namespace OpenSpartan.Forerunner.MCP.Core
 {
     internal static class AuthHandler
     {

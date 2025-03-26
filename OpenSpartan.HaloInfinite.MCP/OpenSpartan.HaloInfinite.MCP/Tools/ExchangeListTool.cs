@@ -1,14 +1,14 @@
 ﻿using Den.Dev.Grunt.Models.HaloInfinite;
 using ModelContextProtocol.Protocol.Types;
 using ModelContextProtocol.Server;
-using OpenSpartan.HaloInfinite.MCP.Core;
-using OpenSpartan.HaloInfinite.MCP.Helpers;
-using OpenSpartan.HaloInfinite.MCP.Models;
+using OpenSpartan.Forerunner.MCP.Core;
+using OpenSpartan.Forerunner.MCP.Helpers;
+using OpenSpartan.Forerunner.MCP.Models;
 using Serilog;
 using SkiaSharp;
 using System.Text.Json;
 
-namespace OpenSpartan.HaloInfinite.MCP.Tools
+namespace OpenSpartan.Forerunner.MCP.Tools
 {
     public class ExchangeListTool : ITool
     {
@@ -19,12 +19,13 @@ namespace OpenSpartan.HaloInfinite.MCP.Tools
 
         public JsonElement InputSchema => JsonSerializer.Deserialize<JsonElement>("""
         {
-            "type": "object",
+            "type": "object"
         }
         """);
 
         public async Task<CallToolResponse> ExecuteAsync(Dictionary<string, object> arguments, IMcpServer server, CancellationToken cancellationToken)
         {
+
             var exchangeItems = new List<ItemMetadataContainer>();
 
             var exchangeOfferings = await HaloInfiniteAPIBridge.SafeAPICall(async () =>

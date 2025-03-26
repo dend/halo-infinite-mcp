@@ -1,6 +1,6 @@
 ﻿using ModelContextProtocol.Protocol.Types;
 
-namespace OpenSpartan.HaloInfinite.MCP.Core
+namespace OpenSpartan.Forerunner.MCP.Core
 {
     public interface IResourceProvider
     {

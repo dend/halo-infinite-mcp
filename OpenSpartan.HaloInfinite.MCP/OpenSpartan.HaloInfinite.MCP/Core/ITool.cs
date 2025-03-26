@@ -2,7 +2,7 @@
 using ModelContextProtocol.Server;
 using System.Text.Json;
 
-namespace OpenSpartan.HaloInfinite.MCP.Core
+namespace OpenSpartan.Forerunner.MCP.Core
 {
     public interface ITool
     {

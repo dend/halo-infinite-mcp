@@ -1,8 +1,8 @@
-﻿namespace OpenSpartan.HaloInfinite.MCP.Core
+﻿namespace OpenSpartan.Forerunner.MCP.Core
 {
     internal sealed class Configuration
     {
-        internal const string PackageName = "OpenSpartan.HaloInfinite.MCP";
+        internal const string PackageName = "OpenSpartan.Forerunner.MCP";
         internal const string Version = "1.0.0";
         internal const string BuildId = "AIRWOLF-03222025";
 

@@ -1,7 +1,7 @@
 ﻿using ModelContextProtocol.Protocol.Types;
 using ModelContextProtocol.Server;
 
-namespace OpenSpartan.HaloInfinite.MCP.Core
+namespace OpenSpartan.Forerunner.MCP.Core
 {
     public class ResourceManager
     {

@@ -1,15 +1,15 @@
 ﻿using ModelContextProtocol.Protocol.Transport;
 using ModelContextProtocol.Protocol.Types;
 using ModelContextProtocol.Server;
-using OpenSpartan.HaloInfinite.MCP.Core;
-using OpenSpartan.HaloInfinite.MCP.Resources;
-using OpenSpartan.HaloInfinite.MCP.Tools;
+using OpenSpartan.Forerunner.MCP.Core;
+using OpenSpartan.Forerunner.MCP.Resources;
+using OpenSpartan.Forerunner.MCP.Tools;
 using System.Text;
 using Microsoft.Extensions.Logging;
 using Serilog;
 
 
-namespace OpenSpartan.HaloInfinite.MCP
+namespace OpenSpartan.Forerunner.MCP
 {
     internal class Program
     {
@@ -185,6 +185,7 @@ namespace OpenSpartan.HaloInfinite.MCP
                 new MyLatestMatchesTool(),
                 new ExchangeListTool(),
                 new MyGearConfiguration(),
+                new MyCareerRankTool(),
             };
 
             return new ToolsCapability
