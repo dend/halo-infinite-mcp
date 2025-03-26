@@ -12,7 +12,7 @@ namespace OpenSpartan.Forerunner.MCP.Tools
 {
     public class MyCareerRankTool : ITool
     {
-        private static readonly JsonSerializerOptions _jsonOptions = new JsonSerializerOptions
+        private static readonly JsonSerializerOptions _jsonOptions = new()
         {
             WriteIndented = true
         };
