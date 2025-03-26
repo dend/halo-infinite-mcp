@@ -5,6 +5,9 @@ using OpenSpartan.HaloInfinite.MCP.Core;
 using OpenSpartan.HaloInfinite.MCP.Resources;
 using OpenSpartan.HaloInfinite.MCP.Tools;
 using System.Text;
+using Microsoft.Extensions.Logging;
+using Serilog;
+
 
 namespace OpenSpartan.HaloInfinite.MCP
 {
@@ -25,20 +28,21 @@ namespace OpenSpartan.HaloInfinite.MCP
                 {
                     McpServerOptions options = new()
                     {
-                        ServerInfo = new Implementation() { Name = "OpenSpartan Halo Infinite MCP Server", Version = "1.0.0" },
+                        ServerInfo = new Implementation() { Name = "OpenSpartan Forerunner - Halo Infinite MCP Server", Version = "1.0.0" },
                         Capabilities = new ServerCapabilities()
                         {
                             Tools = ConfigureTools(),
-                            Resources = ConfigureResources(),
+                            //Resources = ConfigureResources(),
                             //Prompts = ConfigurePrompts(),
                             //Logging = ConfigureLogging()
                         },
                         ProtocolVersion = "2024-11-05",
                         ServerInstructions = "A MCP server designed to help access data from the Halo Infinite API inside an LLM.",
-                        GetCompletionHandler = ConfigureCompletion(),
+                        GetCompletionHandler = ConfigureCompletion()
                     };
 
-                    await using IMcpServer server = McpServerFactory.Create(new StdioServerTransport("OpenSpartan Halo Infinite MCP Server"), options);
+                    using var loggerFactory = CreateLoggerFactory();
+                    await using IMcpServer server = McpServerFactory.Create(new StdioServerTransport("OpenSpartan Forerunner - Halo Infinite MCP Server", loggerFactory), options, loggerFactory);
 
                     await server.StartAsync();
 
@@ -46,13 +50,29 @@ namespace OpenSpartan.HaloInfinite.MCP
                 }
                 else
                 {
-                    Console.WriteLine("Halo Infinite client could not be initialized.");
+                    Log.Logger.Error("Halo Infinite client could not be initialized.");
                 }
             }
             else
             {
-                Console.WriteLine("Could not authenticate the user. This MCP server requires user credentials to work.");
+                Log.Logger.Error("Could not authenticate the user. This MCP server requires user credentials to work.");
             }
+        }
+
+        private static ILoggerFactory CreateLoggerFactory()
+        {
+            Log.Logger = new LoggerConfiguration()
+                    .MinimumLevel.Verbose() // Capture all log levels
+                    .WriteTo.File(Path.Combine(Configuration.AppDataDirectory, "logs", "forerunner_server.log"),
+                        rollingInterval: RollingInterval.Day,
+                        outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] {Message:lj}{NewLine}{Exception}")
+                    .CreateLogger();
+
+            // Create and return the logger factory with Serilog
+            return LoggerFactory.Create(builder =>
+            {
+                builder.AddSerilog(Log.Logger, dispose: true);
+            });
         }
 
         private static ResourcesCapability ConfigureResources()
@@ -163,6 +183,7 @@ namespace OpenSpartan.HaloInfinite.MCP
             {
                 new EndpointSettingsTool(),
                 new MyServiceRecordTool(),
+                new MyLatestMatchesTool(),
             };
 
             return new ToolsCapability
@@ -185,15 +206,12 @@ namespace OpenSpartan.HaloInfinite.MCP
                     var toolName = request.Params?.Name;
                     var tool = tools.FirstOrDefault(t => t.Name == toolName);
 
-                    if (tool == null)
-                    {
-                        throw new McpServerException($"Unknown tool: {toolName}");
-                    }
-
-                    return await tool.ExecuteAsync(
-                        request.Params?.Arguments ?? default,
-                        request.Server,
-                        cancellationToken);
+                    return tool == null
+                        ? throw new McpServerException($"Unknown tool: {toolName}")
+                        : await tool.ExecuteAsync(
+                            request.Params?.Arguments ?? default,
+                            request.Server,
+                            cancellationToken);
                 }
             };
         }

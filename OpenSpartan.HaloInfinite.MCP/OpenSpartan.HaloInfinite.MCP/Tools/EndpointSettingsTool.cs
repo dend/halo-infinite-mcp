@@ -7,7 +7,7 @@ namespace OpenSpartan.HaloInfinite.MCP.Tools
 {
     public class EndpointSettingsTool : ITool
     {
-        public string Name => "opsp_halo_infinite_api_endpoints";
+        public string Name => "opsp_api_endpoints";
         public string Description => "Returns a JSON-formatted list of all available endpoints that exist in the Halo Infinite REST API surface.";
 
         public JsonElement InputSchema => JsonSerializer.Deserialize<JsonElement>("""

@@ -4,6 +4,7 @@ using Den.Dev.Grunt.Models;
 using Den.Dev.Grunt.Models.HaloInfinite;
 using Den.Dev.Grunt.Models.Security;
 using Microsoft.Identity.Client;
+using Serilog;
 
 namespace OpenSpartan.HaloInfinite.MCP.Core
 {
@@ -23,7 +24,7 @@ namespace OpenSpartan.HaloInfinite.MCP.Core
 
                 if (ticket == null)
                 {
-                    Console.WriteLine("Failed to obtain Xbox user token.");
+                    Log.Logger.Error("Failed to obtain Xbox user token.");
                     return false;
                 }
 
@@ -35,7 +36,7 @@ namespace OpenSpartan.HaloInfinite.MCP.Core
 
                 if (haloTicket == null)
                 {
-                    Console.WriteLine("Failed to obtain Halo XSTS token.");
+                    Log.Logger.Error("Failed to obtain Halo XSTS token.");
                     return false;
                 }
 
@@ -54,24 +55,24 @@ namespace OpenSpartan.HaloInfinite.MCP.Core
                     if (clearance != null && !string.IsNullOrWhiteSpace(clearance.FlightConfigurationId))
                     {
                         HaloClient.ClearanceToken = clearance.FlightConfigurationId;
-                        Console.WriteLine($"Your clearance is {clearance.FlightConfigurationId} and it's set in the client.");
+                        Log.Logger.Information($"Your clearance is {clearance.FlightConfigurationId} and it's set in the client.");
                         return true;
                     }
                     else
                     {
-                        Console.WriteLine("Could not obtain the clearance.");
+                        Log.Logger.Error("Could not obtain the clearance.");
                         return false;
                     }
                 }
                 else
                 {
-                    Console.WriteLine("Extended ticket is null. Cannot authenticate.");
+                    Log.Logger.Error("Extended ticket is null. Cannot authenticate.");
                     return false;
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error initializing Halo client: {ex.Message}");
+                Log.Logger.Error($"Error initializing Halo client: {ex.Message}");
                 return false;
             }
         }
@@ -90,7 +91,7 @@ namespace OpenSpartan.HaloInfinite.MCP.Core
                     }
                     else
                     {
-                        Console.WriteLine("Could not reacquire tokens.");
+                        Log.Logger.Error("Could not reacquire tokens.");
                         return default;
                     }
                 }
@@ -99,7 +100,7 @@ namespace OpenSpartan.HaloInfinite.MCP.Core
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Failed to make Halo Infinite API call. {ex.Message}");
+                Log.Logger.Error($"Failed to make Halo Infinite API call. {ex.Message}");
                 return default;
             }
         }
