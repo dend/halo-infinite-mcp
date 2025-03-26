@@ -32,7 +32,7 @@ namespace OpenSpartan.HaloInfinite.MCP
                         Capabilities = new ServerCapabilities()
                         {
                             Tools = ConfigureTools(),
-                            //Resources = ConfigureResources(),
+                            Resources = ConfigureResources(),
                             //Prompts = ConfigurePrompts(),
                             //Logging = ConfigureLogging()
                         },
@@ -80,8 +80,9 @@ namespace OpenSpartan.HaloInfinite.MCP
             // Create resource providers
             var resourceProviders = new IResourceProvider[]
             {
-                new EndpointSettingsResource(),
-                new MyServiceRecordResource()
+                //new EndpointSettingsResource(),
+                //new MyServiceRecordResource()
+                new GetLocalImageResource(),
             };
 
             // Create resource manager
@@ -184,6 +185,7 @@ namespace OpenSpartan.HaloInfinite.MCP
                 new EndpointSettingsTool(),
                 new MyServiceRecordTool(),
                 new MyLatestMatchesTool(),
+                new ExchangeListTool(),
             };
 
             return new ToolsCapability

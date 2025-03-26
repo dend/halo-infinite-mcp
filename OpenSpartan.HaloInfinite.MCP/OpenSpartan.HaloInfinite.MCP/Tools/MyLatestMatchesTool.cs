@@ -9,7 +9,7 @@ namespace OpenSpartan.HaloInfinite.MCP.Tools
     public class MyLatestMatchesTool : ITool
     {
         public string Name => "opsp_my_latest_matches";
-        public string Description => "Returns the stats for a player's latest Halo Infinite matches. This includes all match types, such as matchmade games, custom games, and LAN games.";
+        public string Description => "Returns the stats for a player's latest Halo Infinite matches. This includes all match types, such as matchmade games, custom games, and LAN games. All match dates returned in UTC.";
 
         public JsonElement InputSchema => JsonSerializer.Deserialize<JsonElement>("""
         {
