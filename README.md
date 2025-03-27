@@ -11,6 +11,9 @@
 
 Forerunner is a custom-built **local MCP server** that allows you to connect to your Halo Infinite data through whatever MCP client you're using.
 
+>[!WARNING]
+>This is a **alpha-quality** tool at this point, as the MCP protocol is being fleshed out (and so is Forerunner). Here be dragons.
+
 ## Prerequisites
 
 - [.NET 9 SDK](https://dotnet.microsoft.com/download/dotnet/9.0)
@@ -19,7 +22,7 @@ Forerunner is a custom-built **local MCP server** that allows you to connect to 
 
 1. Download the [latest release](https://github.com/dend/halo-infinite-mcp/releases).
 1. Extract the package locally.
-1. Update your MCP client configuration to point to the `OpenSpartan.Forerunner.MCP.dll` with the `dotnet` command as the bootstrap tool.
+1. Update your MCP client configuration to point to the `OpenSpartan.Forerunner.MCP.exe` with the `dotnet` command as the bootstrap tool.
 
 ### Example configurations
 
@@ -33,10 +36,8 @@ Forerunner is a custom-built **local MCP server** that allows you to connect to 
     "inputs": [],
     "servers": {
         "mcp-halo-infinite": {
-            "command": "dotnet",
-            "args": [
-                "PATH_TO_YOUR_OpenSpartan.Forerunner.MCP.dll",
-            ],
+            "command": "PATH_TO_YOUR_OpenSpartan.Forerunner.MCP.exe",
+            "args": [],
             "env": {}
         }
     }
@@ -48,14 +49,16 @@ Forerunner is a custom-built **local MCP server** that allows you to connect to 
 ```json
 "mcpServers": {
     "mcp-halo-infinite": {
-        "command": "dotnet",
-        "args": [
-            "PATH_TO_YOUR_OpenSpartan.Forerunner.MCP.dll"
-        ],
+        "command": "PATH_TO_YOUR_OpenSpartan.Forerunner.MCP.exe",
+        "args": [],
         "env": {}
     }
 }
 ```
+
+### Authentication
+
+Once you add the tool to your MCP client, you will be prompted for your Microsoft Account (MSA) credentials. This is your Xbox Live account that you use for Halo Infinite. No tokens (or any other credentials artifacts) ever leave your machine during this process. They are cached locally and then used to talk exclusively to Xbox and Halo Infinite REST APIs - nothing else.
 
 ## Supported tools
 
