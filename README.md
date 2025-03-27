@@ -57,6 +57,20 @@ Forerunner is a custom-built **local MCP server** that allows you to connect to 
 }
 ```
 
+## Supported tools
+
+>[!IMPORTANT]
+>I am constantly adding new tools. This table will be updated as new ones are introduced.
+
+| Tool Name | Description |
+|-----------|-------------|
+| `opsp_api_endpoints` | Returns a JSON-formatted list of all available endpoints that exist in the Halo Infinite REST API surface. |
+| `opsp_my_service_record` | Returns the complete Halo Infinite player service record for matchmade games for the currently authenticated player. This tool does not have the career rank. |
+| `opsp_my_latest_matches` | Returns the stats for a player's latest Halo Infinite matches. This includes all match types, such as matchmade games, custom games, and LAN games. All match dates returned in UTC. |
+| `opsp_exchange_list` | Lists all of the items that are currently available on the Halo Infinite exchange. |
+| `opsp_my_gear_configuration` | Returns Halo Infinite customizations with their images for the authenticated user. |
+| `opsp_my_career_rank` | Returns the player's current Halo Infinite career rank (or level) and progress to the top level (Hero). The player earns experience with every match and might want to know how long until Hero rank. |
+
 ## Running
 
 Some questions you can ask:
