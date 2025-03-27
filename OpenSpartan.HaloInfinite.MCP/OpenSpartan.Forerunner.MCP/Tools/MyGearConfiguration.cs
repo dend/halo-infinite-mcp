@@ -51,6 +51,8 @@ namespace OpenSpartan.Forerunner.MCP.Tools
 
             string jsonCacheDir = Path.Combine(Configuration.AppDataDirectory, "jsoncache");
             string imageCacheDir = Path.Combine(Configuration.AppDataDirectory, "imagecache");
+            
+            // Ensure base cache directories exist
             FileSystemHelpers.EnsureDirectoryExists(jsonCacheDir);
             FileSystemHelpers.EnsureDirectoryExists(imageCacheDir);
 
@@ -60,10 +62,12 @@ namespace OpenSpartan.Forerunner.MCP.Tools
             {
                 try
                 {
-                    string normalizedPath = jsonPath.TrimStart('/');
+                    // Normalize the path for file system use
+                    string normalizedPath = FileSystemHelpers.NormalizePathForFileSystem(jsonPath);
                     string cachedJsonPath = Path.Combine(jsonCacheDir, normalizedPath);
 
-                    FileSystemHelpers.EnsureDirectoryExists(Path.GetDirectoryName(cachedJsonPath));
+                    // Ensure the directory structure exists for this specific JSON file
+                    FileSystemHelpers.EnsureDirectoryExists(cachedJsonPath);
 
                     InGameItem itemResult;
 
@@ -71,9 +75,10 @@ namespace OpenSpartan.Forerunner.MCP.Tools
                     {
                         try
                         {
+                            Log.Logger.Information($"Trying to read {cachedJsonPath}...");
                             string cachedJson = await System.IO.File.ReadAllTextAsync(cachedJsonPath, cancellationToken);
                             itemResult = JsonSerializer.Deserialize<InGameItem>(cachedJson);
-                            Log.Logger.Debug($"Loaded item from cache: {jsonPath}");
+                            Log.Logger.Information($"Loaded item from cache: {jsonPath}");
                         }
                         catch (Exception ex)
                         {
@@ -81,7 +86,7 @@ namespace OpenSpartan.Forerunner.MCP.Tools
                             var item = await HaloInfiniteAPIBridge.SafeAPICall(async () =>
                                 await HaloInfiniteAPIBridge.HaloClient.GameCmsGetProgressionFile<InGameItem>(jsonPath));
 
-                            if (item.Result == null)
+                            if (item?.Result == null)
                             {
                                 Log.Logger.Error($"API returned null for {jsonPath}");
                                 continue;
@@ -94,10 +99,11 @@ namespace OpenSpartan.Forerunner.MCP.Tools
                     }
                     else
                     {
+                        Log.Logger.Information($"{cachedJsonPath} did not exist. Downloading...");
                         var item = await HaloInfiniteAPIBridge.SafeAPICall(async () =>
                             await HaloInfiniteAPIBridge.HaloClient.GameCmsGetProgressionFile<InGameItem>(jsonPath));
 
-                        if (item.Result == null)
+                        if (item?.Result == null)
                         {
                             Log.Logger.Error($"API returned null for {jsonPath}");
                             continue;
@@ -105,24 +111,28 @@ namespace OpenSpartan.Forerunner.MCP.Tools
 
                         itemResult = item.Result;
 
+                        Log.Logger.Information($"Trying to write {cachedJsonPath}...");
                         await System.IO.File.WriteAllTextAsync(cachedJsonPath, JsonSerializer.Serialize(itemResult, _jsonOptions), cancellationToken);
-                        Log.Logger.Debug($"Cached item: {jsonPath}");
+                        Log.Logger.Information($"Cached item: {jsonPath}");
                     }
 
                     if (itemResult?.CommonData?.DisplayPath?.Media?.MediaUrl?.Path != null)
                     {
                         var imageServicePath = itemResult.CommonData.DisplayPath.Media.MediaUrl.Path;
-                        imageServicePath = imageServicePath.TrimStart('/');
+                        // Normalize the image path for file system use
+                        imageServicePath = FileSystemHelpers.NormalizePathForFileSystem(imageServicePath);
 
                         string qualifiedItemImagePath = Path.Combine(imageCacheDir, imageServicePath);
-
-                        Directory.CreateDirectory(Path.GetDirectoryName(qualifiedItemImagePath));
+                        
+                        // Make sure the directory for the image exists
+                        FileSystemHelpers.EnsureDirectoryExists(qualifiedItemImagePath);
 
                         try
                         {
                             if (!System.IO.File.Exists(qualifiedItemImagePath))
                             {
-                                await HaloInfiniteAPIBridge.DownloadHaloAPIImage(imageServicePath, qualifiedItemImagePath);
+                                // Use the original path for the API call, but the normalized path for the file system
+                                await HaloInfiniteAPIBridge.DownloadHaloAPIImage(itemResult.CommonData.DisplayPath.Media.MediaUrl.Path, qualifiedItemImagePath);
                                 Log.Logger.Debug($"Downloaded image: {imageServicePath}");
                             }
                             else
@@ -149,8 +159,6 @@ namespace OpenSpartan.Forerunner.MCP.Tools
                                 Type = "text",
                                 MimeType = "application/json"
                             });
-
-                            Log.Logger.Information($"IMAGE_TEST: {base64Image}");
 
                             if (!string.IsNullOrWhiteSpace(base64Image))
                             {
