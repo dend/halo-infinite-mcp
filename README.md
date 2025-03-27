@@ -58,3 +58,13 @@ Forerunner is a custom-built **local MCP server** that allows you to connect to 
 ```
 
 ## Running
+
+Some questions you can ask:
+
+1. What are my latest stats for matchmade games?
+1. What were the outcomes for my last 10 matches?
+1. What is my current armor configuration?
+1. What’s currently available on sale through The Exchange?
+1. What’s my current career rank?
+
+![GIF showing querying the Forerunner MCP for career rank data from Claude Desktop](media/claude-desktop-career-rank.gif)
